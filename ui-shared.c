@@ -14,6 +14,21 @@
 #include "html.h"
 #include "version.h"
 
+/* macOS compat: memrchr is a GNU extension */
+#ifndef HAVE_MEMRCHR
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__)
+static inline void *memrchr(const void *s, int c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s + n;
+	while (n--) {
+		if (*--p == (unsigned char)c)
+			return (void *)p;
+	}
+	return NULL;
+}
+#endif
+#endif
+
 static const char cgit_doctype[] =
 "<!DOCTYPE html>\n";
 
