@@ -87,8 +87,13 @@ struct cgit_repo *cgit_add_repo(const char *url)
 struct cgit_repo *cgit_get_repoinfo(const char *url)
 {
 	int i;
+	size_t len;
 	struct cgit_repo *repo;
+	char *alt_url = NULL;
 
+	len = strlen(url);
+
+	/* Try exact match first */
 	for (i = 0; i < cgit_repolist.count; i++) {
 		repo = &cgit_repolist.repos[i];
 		if (repo->ignore)
@@ -96,6 +101,28 @@ struct cgit_repo *cgit_get_repoinfo(const char *url)
 		if (!strcmp(repo->url, url))
 			return repo;
 	}
+
+	/* Try alternate form: with or without .git suffix */
+	if (len > 4 && !strcmp(url + len - 4, ".git")) {
+		/* URL has .git, try without */
+		alt_url = xstrdup(url);
+		alt_url[len - 4] = '\0';
+	} else {
+		/* URL has no .git, try with */
+		alt_url = xstrfmt("%s.git", url);
+	}
+
+	for (i = 0; i < cgit_repolist.count; i++) {
+		repo = &cgit_repolist.repos[i];
+		if (repo->ignore)
+			continue;
+		if (!strcmp(repo->url, alt_url)) {
+			free(alt_url);
+			return repo;
+		}
+	}
+
+	free(alt_url);
 	return NULL;
 }
 

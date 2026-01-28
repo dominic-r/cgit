@@ -1,5 +1,6 @@
 # cgit development config
 
+virtual-root=/
 css=/cgit.css
 logo=/cgit.png
 favicon=/favicon.ico
@@ -8,6 +9,7 @@ root-title=cgit (dev)
 root-desc=Local development
 
 # Scan all repos under ~/Developer
+remove-suffix=1
 scan-path=/Users/dominic/Developer/
 
 # Disable cache for dev
