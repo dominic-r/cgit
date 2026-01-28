@@ -1,19 +1,325 @@
+:root {
+	/* Light mode */
+	--bg-primary: #ffffff;
+	--bg-secondary: #f7f7f7;
+	--bg-tertiary: #eeeeee;
+	--bg-highlight: #e8e8e8;
+	--bg-panel: #eeeeee;
+
+	--text-primary: #333333;
+	--text-secondary: #555555;
+	--text-muted: #777777;
+	--text-dimmed: #888888;
+	--text-faint: #bbbbbb;
+
+	--link-color: #0066cc;
+	--link-hover: #0044aa;
+	--link-tab: #777777;
+	--link-tab-active: #000000;
+
+	--border-color: #cccccc;
+	--border-light: #dddddd;
+	--border-dark: #aaaaaa;
+
+	--header-text: #000000;
+	--header-sub: #777777;
+
+	--diff-add-bg: #ddffdd;
+	--diff-add-dark: #aaccaa;
+	--diff-add-text: #228822;
+	--diff-del-bg: #ffdddd;
+	--diff-del-dark: #ccaaaa;
+	--diff-del-text: #cc2222;
+	--diff-hunk: #0000aa;
+	--diff-hunk-bg: #ccccff;
+	--diff-changed-bg: #ffffcc;
+	--diff-changed-dark: #ccccaa;
+
+	--branch-bg: #88ff88;
+	--branch-border: #007700;
+	--tag-bg: #ffff88;
+	--tag-border: #777700;
+	--tag-annotated-bg: #ffcc88;
+	--remote-bg: #ccccff;
+	--remote-border: #000077;
+	--deco-bg: #ff8888;
+	--deco-border: #770000;
+
+	--notes-bg: #ffffdd;
+	--notes-border: #eeee99;
+
+	--graph-add: #55cc55;
+	--graph-del: #cc5555;
+
+	--stats-header: #eeeeee;
+	--stats-sum: #cc0000;
+
+	--age-mins: #008800;
+	--age-hours: #008800;
+	--age-days: #004400;
+	--age-weeks: #444444;
+	--age-months: #888888;
+	--age-years: #bbbbbb;
+
+	--code-bg: #f8f8f8;
+	--lineno-color: #888888;
+	--lineno-hover: #000000;
+
+	color-scheme: light dark;
+}
+
+/* Dark mode */
+[data-theme="dark"],
+html:not([data-theme="light"]):has(body) @media (prefers-color-scheme: dark) {
+	--bg-primary: #1a1a1a;
+	--bg-secondary: #242424;
+	--bg-tertiary: #2a2a2a;
+	--bg-highlight: #333333;
+	--bg-panel: #2a2a2a;
+
+	--text-primary: #e0e0e0;
+	--text-secondary: #c0c0c0;
+	--text-muted: #999999;
+	--text-dimmed: #777777;
+	--text-faint: #555555;
+
+	--link-color: #6699ff;
+	--link-hover: #88bbff;
+	--link-tab: #888888;
+	--link-tab-active: #ffffff;
+
+	--border-color: #444444;
+	--border-light: #333333;
+	--border-dark: #555555;
+
+	--header-text: #ffffff;
+	--header-sub: #999999;
+
+	--diff-add-bg: #1a3a1a;
+	--diff-add-dark: #2a4a2a;
+	--diff-add-text: #66cc66;
+	--diff-del-bg: #3a1a1a;
+	--diff-del-dark: #4a2a2a;
+	--diff-del-text: #ff6666;
+	--diff-hunk: #6688ff;
+	--diff-hunk-bg: #2a2a4a;
+	--diff-changed-bg: #3a3a1a;
+	--diff-changed-dark: #4a4a2a;
+
+	--branch-bg: #1a4a1a;
+	--branch-border: #44aa44;
+	--tag-bg: #4a4a1a;
+	--tag-border: #aaaa44;
+	--tag-annotated-bg: #4a3a1a;
+	--remote-bg: #2a2a4a;
+	--remote-border: #6666cc;
+	--deco-bg: #4a1a1a;
+	--deco-border: #cc4444;
+
+	--notes-bg: #3a3a1a;
+	--notes-border: #555522;
+
+	--graph-add: #44aa44;
+	--graph-del: #aa4444;
+
+	--stats-header: #2a2a2a;
+	--stats-sum: #ff6666;
+
+	--age-mins: #44cc44;
+	--age-hours: #44cc44;
+	--age-days: #44aa44;
+	--age-weeks: #888888;
+	--age-months: #666666;
+	--age-years: #444444;
+
+	--code-bg: #1e1e1e;
+	--lineno-color: #666666;
+	--lineno-hover: #cccccc;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg-primary: #1a1a1a;
+		--bg-secondary: #242424;
+		--bg-tertiary: #2a2a2a;
+		--bg-highlight: #333333;
+		--bg-panel: #2a2a2a;
+
+		--text-primary: #e0e0e0;
+		--text-secondary: #c0c0c0;
+		--text-muted: #999999;
+		--text-dimmed: #777777;
+		--text-faint: #555555;
+
+		--link-color: #6699ff;
+		--link-hover: #88bbff;
+		--link-tab: #888888;
+		--link-tab-active: #ffffff;
+
+		--border-color: #444444;
+		--border-light: #333333;
+		--border-dark: #555555;
+
+		--header-text: #ffffff;
+		--header-sub: #999999;
+
+		--diff-add-bg: #1a3a1a;
+		--diff-add-dark: #2a4a2a;
+		--diff-add-text: #66cc66;
+		--diff-del-bg: #3a1a1a;
+		--diff-del-dark: #4a2a2a;
+		--diff-del-text: #ff6666;
+		--diff-hunk: #6688ff;
+		--diff-hunk-bg: #2a2a4a;
+		--diff-changed-bg: #3a3a1a;
+		--diff-changed-dark: #4a4a2a;
+
+		--branch-bg: #1a4a1a;
+		--branch-border: #44aa44;
+		--tag-bg: #4a4a1a;
+		--tag-border: #aaaa44;
+		--tag-annotated-bg: #4a3a1a;
+		--remote-bg: #2a2a4a;
+		--remote-border: #6666cc;
+		--deco-bg: #4a1a1a;
+		--deco-border: #cc4444;
+
+		--notes-bg: #3a3a1a;
+		--notes-border: #555522;
+
+		--graph-add: #44aa44;
+		--graph-del: #aa4444;
+
+		--stats-header: #2a2a2a;
+		--stats-sum: #ff6666;
+
+		--age-mins: #44cc44;
+		--age-hours: #44cc44;
+		--age-days: #44aa44;
+		--age-weeks: #888888;
+		--age-months: #666666;
+		--age-years: #444444;
+
+		--code-bg: #1e1e1e;
+		--lineno-color: #666666;
+		--lineno-hover: #cccccc;
+	}
+}
+
+[data-theme="dark"] {
+	--bg-primary: #1a1a1a;
+	--bg-secondary: #242424;
+	--bg-tertiary: #2a2a2a;
+	--bg-highlight: #333333;
+	--bg-panel: #2a2a2a;
+
+	--text-primary: #e0e0e0;
+	--text-secondary: #c0c0c0;
+	--text-muted: #999999;
+	--text-dimmed: #777777;
+	--text-faint: #555555;
+
+	--link-color: #6699ff;
+	--link-hover: #88bbff;
+	--link-tab: #888888;
+	--link-tab-active: #ffffff;
+
+	--border-color: #444444;
+	--border-light: #333333;
+	--border-dark: #555555;
+
+	--header-text: #ffffff;
+	--header-sub: #999999;
+
+	--diff-add-bg: #1a3a1a;
+	--diff-add-dark: #2a4a2a;
+	--diff-add-text: #66cc66;
+	--diff-del-bg: #3a1a1a;
+	--diff-del-dark: #4a2a2a;
+	--diff-del-text: #ff6666;
+	--diff-hunk: #6688ff;
+	--diff-hunk-bg: #2a2a4a;
+	--diff-changed-bg: #3a3a1a;
+	--diff-changed-dark: #4a4a2a;
+
+	--branch-bg: #1a4a1a;
+	--branch-border: #44aa44;
+	--tag-bg: #4a4a1a;
+	--tag-border: #aaaa44;
+	--tag-annotated-bg: #4a3a1a;
+	--remote-bg: #2a2a4a;
+	--remote-border: #6666cc;
+	--deco-bg: #4a1a1a;
+	--deco-border: #cc4444;
+
+	--notes-bg: #3a3a1a;
+	--notes-border: #555522;
+
+	--graph-add: #44aa44;
+	--graph-del: #aa4444;
+
+	--stats-header: #2a2a2a;
+	--stats-sum: #ff6666;
+
+	--age-mins: #44cc44;
+	--age-hours: #44cc44;
+	--age-days: #44aa44;
+	--age-weeks: #888888;
+	--age-months: #666666;
+	--age-years: #444444;
+
+	--code-bg: #1e1e1e;
+	--lineno-color: #666666;
+	--lineno-hover: #cccccc;
+}
+
+/* Global select styling */
+div#cgit select,
+div#cgit input {
+	background: var(--bg-primary);
+	color: var(--text-primary);
+	border: 1px solid var(--border-color);
+	border-radius: 3px;
+	padding: 2px 6px;
+	font-size: inherit;
+	cursor: pointer;
+}
+
+div#cgit select:hover,
+div#cgit input:hover {
+	border-color: var(--border-dark);
+}
+
+div#cgit select option {
+	background: var(--bg-primary);
+	color: var(--text-primary);
+}
+
+
+/* Base styles */
+body {
+	background: var(--bg-primary);
+	margin: 0;
+	padding: 0;
+}
+
 div#cgit {
 	padding: 0em;
 	margin: 0em;
-	font-family: sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	font-size: 10pt;
-	color: #333;
-	background: white;
+	color: var(--text-primary);
+	background: var(--bg-primary);
 	padding: 4px;
 }
 
 div#cgit a {
-	color: blue;
+	color: var(--link-color);
 	text-decoration: none;
 }
 
 div#cgit a:hover {
+	color: var(--link-hover);
 	text-decoration: underline;
 }
 
@@ -38,7 +344,7 @@ div#cgit table#header td.main {
 }
 
 div#cgit table#header td.main a {
-	color: #000;
+	color: var(--header-text);
 }
 
 div#cgit table#header td.form {
@@ -56,13 +362,13 @@ div#cgit table#header td.form select {
 }
 
 div#cgit table#header td.sub {
-	color: #777;
-	border-top: solid 1px #ccc;
+	color: var(--header-sub);
+	border-top: solid 1px var(--border-color);
 	padding-left: 10px;
 }
 
 div#cgit table.tabs {
-	border-bottom: solid 3px #ccc;
+	border-bottom: solid 3px var(--border-color);
 	border-collapse: collapse;
 	margin-top: 2em;
 	margin-bottom: 0px;
@@ -76,19 +382,13 @@ div#cgit table.tabs td {
 
 div#cgit table.tabs td a {
 	padding: 2px 0.75em;
-	color: #777;
+	color: var(--link-tab);
 	font-size: 110%;
 }
 
 div#cgit table.tabs td a.active {
-	color: #000;
-	background-color: #ccc;
-}
-
-div#cgit table.tabs a[href^="http://"]:after, div#cgit table.tabs a[href^="https://"]:after {
-	content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAQAAAAnOwc2AAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfgAhcJDQY+gm2TAAAAHWlUWHRDb21tZW50AAAAAABDcmVhdGVkIHdpdGggR0lNUGQuZQcAAABbSURBVAhbY2BABs4MU4CwhYHBh2Erww4wrGFQZHjI8B8IgUIscJWyDHcggltQhI4zGDCcRwhChPggHIggP1QoAVmQkSETrGoHsiAEsACtBYN0oDAMbgU6EBcAAL2eHUt4XUU4AAAAAElFTkSuQmCC);
-	opacity: 0.5;
-	margin: 0 0 0 5px;
+	color: var(--link-tab-active);
+	background-color: var(--border-color);
 }
 
 div#cgit table.tabs td.form {
@@ -109,16 +409,15 @@ div#cgit table.tabs td.form select {
 div#cgit div.path {
 	margin: 0px;
 	padding: 5px 2em 2px 2em;
-	color: #000;
-	background-color: #eee;
+	color: var(--text-primary);
+	background-color: var(--bg-tertiary);
 }
 
 div#cgit div.content {
 	margin: 0px;
 	padding: 2em;
-	border-bottom: solid 3px #ccc;
+	border-bottom: solid 3px var(--border-color);
 }
-
 
 div#cgit table.list {
 	width: 100%;
@@ -127,49 +426,46 @@ div#cgit table.list {
 }
 
 div#cgit table.list tr {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.list tr.logheader {
-	background: #eee;
+	background: var(--bg-tertiary);
 }
 
 div#cgit table.list tr:nth-child(even) {
-	background: #f7f7f7;
+	background: var(--bg-secondary);
 }
 
 div#cgit table.list tr:nth-child(odd) {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.list tr:hover {
-	background: #eee;
+	background: var(--bg-highlight);
 }
 
 div#cgit table.list tr.nohover {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.list tr.nohover:hover {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.list tr.nohover-highlight:hover:nth-child(even) {
-	background: #f7f7f7;
+	background: var(--bg-secondary);
 }
 
 div#cgit table.list tr.nohover-highlight:hover:nth-child(odd) {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.list th {
 	font-weight: bold;
-	/* color: #888;
-	border-top: dashed 1px #888;
-	border-bottom: dashed 1px #888;
-	*/
 	padding: 0.1em 0.5em 0.05em 0.5em;
 	vertical-align: baseline;
+	color: var(--text-secondary);
 }
 
 div#cgit table.list td {
@@ -182,29 +478,12 @@ div#cgit table.list td.commitgraph {
 	white-space: pre;
 }
 
-div#cgit table.list td.commitgraph .column1 {
-	color: #a00;
-}
-
-div#cgit table.list td.commitgraph .column2 {
-	color: #0a0;
-}
-
-div#cgit table.list td.commitgraph .column3 {
-	color: #aa0;
-}
-
-div#cgit table.list td.commitgraph .column4 {
-	color: #00a;
-}
-
-div#cgit table.list td.commitgraph .column5 {
-	color: #a0a;
-}
-
-div#cgit table.list td.commitgraph .column6 {
-	color: #0aa;
-}
+div#cgit table.list td.commitgraph .column1 { color: #e06060; }
+div#cgit table.list td.commitgraph .column2 { color: #60e060; }
+div#cgit table.list td.commitgraph .column3 { color: #e0e060; }
+div#cgit table.list td.commitgraph .column4 { color: #6060e0; }
+div#cgit table.list td.commitgraph .column5 { color: #e060e0; }
+div#cgit table.list td.commitgraph .column6 { color: #60e0e0; }
 
 div#cgit table.list td.logsubject {
 	font-family: monospace;
@@ -213,21 +492,22 @@ div#cgit table.list td.logsubject {
 
 div#cgit table.list td.logmsg {
 	font-family: monospace;
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 	padding: 0 0.5em;
 }
 
 div#cgit table.list td a {
-	color: black;
+	color: var(--text-primary);
 }
 
 div#cgit table.list td a.ls-dir {
 	font-weight: bold;
-	color: #00f;
+	color: var(--link-color);
 }
 
 div#cgit table.list td a:hover {
-	color: #00f;
+	color: var(--link-hover);
 }
 
 div#cgit img {
@@ -261,21 +541,21 @@ div#cgit div#summary {
 div#cgit table#downloads {
 	float: right;
 	border-collapse: collapse;
-	border: solid 1px #777;
+	border: solid 1px var(--border-dark);
 	margin-left: 0.5em;
 	margin-bottom: 0.5em;
 }
 
 div#cgit table#downloads th {
-	background-color: #ccc;
+	background-color: var(--bg-tertiary);
 }
 
 div#cgit div#blob {
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 }
 
 div#cgit div.error {
-	color: red;
+	color: var(--diff-del-text);
 	font-weight: bold;
 	margin: 1em 2em;
 }
@@ -297,37 +577,48 @@ div#cgit td.ls-mode {
 
 div#cgit table.blob {
 	margin-top: 0.5em;
-	border-top: solid 1px black;
+	border-top: solid 1px var(--border-dark);
 }
 
 div#cgit table.blob td.hashes,
 div#cgit table.blob td.lines {
-	margin: 0; padding: 0 0 0 0.5em;
+	margin: 0;
+	padding: 0 0 0 0.5em;
 	vertical-align: top;
-	color: black;
+	color: var(--text-primary);
+	background: var(--code-bg);
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 div#cgit table.blob td.linenumbers {
-	margin: 0; padding: 0 0.5em 0 0.5em;
+	margin: 0;
+	padding: 0 0.5em 0 0.5em;
 	vertical-align: top;
 	text-align: right;
-	border-right: 1px solid gray;
+	border-right: 1px solid var(--border-color);
+	background: var(--bg-secondary);
 }
 
 div#cgit table.blob pre {
-	padding: 0; margin: 0;
+	padding: 0;
+	margin: 0;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 div#cgit table.blob td.linenumbers a,
 div#cgit table.ssdiff td.lineno a {
-	color: gray;
+	color: var(--lineno-color);
 	text-align: right;
 	text-decoration: none;
 }
 
 div#cgit table.blob td.linenumbers a:hover,
 div#cgit table.ssdiff td.lineno a:hover {
-	color: black;
+	color: var(--lineno-hover);
 }
 
 div#cgit table.blame td.hashes,
@@ -346,11 +637,11 @@ div#cgit table.blame td.linenumbers div.alt {
 }
 
 div#cgit table.blame div.alt:nth-child(even) {
-	background: #eee;
+	background: var(--bg-tertiary);
 }
 
 div#cgit table.blame div.alt:nth-child(odd) {
-	background: white;
+	background: var(--bg-primary);
 }
 
 div#cgit table.blame td.lines > div {
@@ -361,6 +652,9 @@ div#cgit table.blame td.lines > div > pre {
 	padding: 0 0 0 0.5em;
 	position: absolute;
 	top: 0;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 div#cgit table.blame .oid {
@@ -369,20 +663,23 @@ div#cgit table.blame .oid {
 
 div#cgit table.bin-blob {
 	margin-top: 0.5em;
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 }
 
 div#cgit table.bin-blob th {
 	font-family: monospace;
-	white-space: pre;
-	border: solid 1px #777;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	border: solid 1px var(--border-dark);
 	padding: 0.5em 1em;
+	background: var(--bg-tertiary);
 }
 
 div#cgit table.bin-blob td {
 	font-family: monospace;
-	white-space: pre;
-	border-left: solid 1px #777;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	border-left: solid 1px var(--border-dark);
 	padding: 0em 1em;
 }
 
@@ -402,8 +699,8 @@ div#cgit div.cgit-panel {
 
 div#cgit div.cgit-panel table {
 	border-collapse: collapse;
-	border: solid 1px #aaa;
-	background-color: #eee;
+	border: solid 1px var(--border-dark);
+	background-color: var(--bg-panel);
 }
 
 div#cgit div.cgit-panel th {
@@ -427,6 +724,7 @@ div#cgit table.commit-info th {
 	font-weight: normal;
 	padding: 0.1em 1em 0.1em 0.1em;
 	vertical-align: top;
+	color: var(--text-muted);
 }
 
 div#cgit table.commit-info td {
@@ -442,7 +740,8 @@ div#cgit div.commit-subject {
 }
 
 div#cgit div.commit-msg {
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 	font-family: monospace;
 }
 
@@ -452,10 +751,11 @@ div#cgit div.notes-header {
 }
 
 div#cgit div.notes {
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 	font-family: monospace;
-	border: solid 1px #ee9;
-	background-color: #ffd;
+	border: solid 1px var(--notes-border);
+	background-color: var(--notes-bg);
 	padding: 0.3em 2em 0.3em 1em;
 	float: left;
 }
@@ -471,8 +771,8 @@ div#cgit div.diffstat-header {
 
 div#cgit table.diffstat {
 	border-collapse: collapse;
-	border: solid 1px #aaa;
-	background-color: #eee;
+	border: solid 1px var(--border-dark);
+	background-color: var(--bg-panel);
 }
 
 div#cgit table.diffstat th {
@@ -495,19 +795,19 @@ div#cgit table.diffstat td.mode {
 
 div#cgit table.diffstat td span.modechange {
 	padding-left: 1em;
-	color: red;
+	color: var(--diff-del-text);
 }
 
 div#cgit table.diffstat td.add a {
-	color: green;
+	color: var(--diff-add-text);
 }
 
 div#cgit table.diffstat td.del a {
-	color: red;
+	color: var(--diff-del-text);
 }
 
 div#cgit table.diffstat td.upd a {
-	color: blue;
+	color: var(--link-color);
 }
 
 div#cgit table.diffstat td.graph {
@@ -526,15 +826,15 @@ div#cgit table.diffstat td.graph td {
 }
 
 div#cgit table.diffstat td.graph td.add {
-	background-color: #5c5;
+	background-color: var(--graph-add);
 }
 
 div#cgit table.diffstat td.graph td.rem {
-	background-color: #c55;
+	background-color: var(--graph-del);
 }
 
 div#cgit div.diffstat-summary {
-	color: #888;
+	color: var(--text-dimmed);
 	padding-top: 0.5em;
 }
 
@@ -544,25 +844,27 @@ div#cgit table.diff {
 
 div#cgit table.diff td {
 	font-family: monospace;
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
 }
 
 div#cgit table.diff td div.head {
 	font-weight: bold;
 	margin-top: 1em;
-	color: black;
+	color: var(--text-primary);
 }
 
 div#cgit table.diff td div.hunk {
-	color: #009;
+	color: var(--diff-hunk);
 }
 
 div#cgit table.diff td div.add {
-	color: green;
+	color: var(--diff-add-text);
 }
 
 div#cgit table.diff td div.del {
-	color: red;
+	color: var(--diff-del-text);
 }
 
 div#cgit .oid {
@@ -580,7 +882,7 @@ div#cgit .right {
 
 div#cgit table.list td.reposection {
 	font-style: italic;
-	color: #888;
+	color: var(--text-dimmed);
 }
 
 div#cgit a.button {
@@ -594,10 +896,6 @@ div#cgit a.primary {
 
 div#cgit a.secondary {
 	font-size: 90%;
-}
-
-div#cgit td.toplevel-repo {
-
 }
 
 div#cgit table.list td.sublevel-repo {
@@ -617,7 +915,7 @@ div#cgit ul.pager li {
 }
 
 div#cgit ul.pager a {
-	color: #777;
+	color: var(--link-tab);
 }
 
 div#cgit ul.pager .current {
@@ -626,46 +924,46 @@ div#cgit ul.pager .current {
 
 div#cgit span.age-mins {
 	font-weight: bold;
-	color: #080;
+	color: var(--age-mins);
 }
 
 div#cgit span.age-hours {
-	color: #080;
+	color: var(--age-hours);
 }
 
 div#cgit span.age-days {
-	color: #040;
+	color: var(--age-days);
 }
 
 div#cgit span.age-weeks {
-	color: #444;
+	color: var(--age-weeks);
 }
 
 div#cgit span.age-months {
-	color: #888;
+	color: var(--age-months);
 }
 
 div#cgit span.age-years {
-	color: #bbb;
+	color: var(--age-years);
 }
 
 div#cgit span.insertions {
-	color: #080;
+	color: var(--diff-add-text);
 }
 
 div#cgit span.deletions {
-	color: #800;
+	color: var(--diff-del-text);
 }
 
 div#cgit div.footer {
 	margin-top: 0.5em;
 	text-align: center;
 	font-size: 80%;
-	color: #ccc;
+	color: var(--text-faint);
 }
 
 div#cgit div.footer a {
-	color: #ccc;
+	color: var(--text-faint);
 	text-decoration: none;
 }
 
@@ -674,43 +972,43 @@ div#cgit div.footer a:hover {
 }
 
 div#cgit a.branch-deco {
-	color: #000;
+	color: var(--text-primary);
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
-	background-color: #88ff88;
-	border: solid 1px #007700;
+	background-color: var(--branch-bg);
+	border: solid 1px var(--branch-border);
 }
 
 div#cgit a.tag-deco {
-	color: #000;
+	color: var(--text-primary);
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
-	background-color: #ffff88;
-	border: solid 1px #777700;
+	background-color: var(--tag-bg);
+	border: solid 1px var(--tag-border);
 }
 
 div#cgit a.tag-annotated-deco {
-	color: #000;
+	color: var(--text-primary);
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
-	background-color: #ffcc88;
-	border: solid 1px #777700;
+	background-color: var(--tag-annotated-bg);
+	border: solid 1px var(--tag-border);
 }
 
 div#cgit a.remote-deco {
-	color: #000;
+	color: var(--text-primary);
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
-	background-color: #ccccff;
-	border: solid 1px #000077;
+	background-color: var(--remote-bg);
+	border: solid 1px var(--remote-border);
 }
 
 div#cgit a.deco {
-	color: #000;
+	color: var(--text-primary);
 	margin: 0px 0.5em;
 	padding: 0px 0.25em;
-	background-color: #ff8888;
-	border: solid 1px #770000;
+	background-color: var(--deco-bg);
+	border: solid 1px var(--deco-border);
 }
 
 div#cgit div.commit-subject a.branch-deco,
@@ -723,21 +1021,21 @@ div#cgit div.commit-subject a.deco {
 }
 
 div#cgit table.stats {
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 	border-collapse: collapse;
 }
 
 div#cgit table.stats th {
 	text-align: left;
 	padding: 1px 0.5em;
-	background-color: #eee;
-	border: solid 1px black;
+	background-color: var(--stats-header);
+	border: solid 1px var(--border-dark);
 }
 
 div#cgit table.stats td {
 	text-align: right;
 	padding: 1px 0.5em;
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 }
 
 div#cgit table.stats td.total {
@@ -746,9 +1044,8 @@ div#cgit table.stats td.total {
 }
 
 div#cgit table.stats td.sum {
-	color: #c00;
+	color: var(--stats-sum);
 	font-weight: bold;
-/*	background-color: #eee; */
 }
 
 div#cgit table.stats td.left {
@@ -757,14 +1054,14 @@ div#cgit table.stats td.left {
 
 div#cgit table.vgraph {
 	border-collapse: separate;
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 	height: 200px;
 }
 
 div#cgit table.vgraph th {
-	background-color: #eee;
+	background-color: var(--stats-header);
 	font-weight: bold;
-	border: solid 1px white;
+	border: solid 1px var(--bg-primary);
 	padding: 1px 0.5em;
 }
 
@@ -774,18 +1071,18 @@ div#cgit table.vgraph td {
 }
 
 div#cgit table.vgraph div.bar {
-	background-color: #eee;
+	background-color: var(--bg-tertiary);
 }
 
 div#cgit table.hgraph {
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 	width: 800px;
 }
 
 div#cgit table.hgraph th {
-	background-color: #eee;
+	background-color: var(--stats-header);
 	font-weight: bold;
-	border: solid 1px black;
+	border: solid 1px var(--border-dark);
 	padding: 1px 0.5em;
 }
 
@@ -795,7 +1092,7 @@ div#cgit table.hgraph td {
 }
 
 div#cgit table.hgraph div.bar {
-	background-color: #eee;
+	background-color: var(--bg-tertiary);
 	height: 1em;
 }
 
@@ -806,85 +1103,87 @@ div#cgit table.ssdiff {
 div#cgit table.ssdiff td {
 	font-size: 75%;
 	font-family: monospace;
-	white-space: pre;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
 	padding: 1px 4px 1px 4px;
-	border-left: solid 1px #aaa;
-	border-right: solid 1px #aaa;
+	border-left: solid 1px var(--border-dark);
+	border-right: solid 1px var(--border-dark);
 }
 
 div#cgit table.ssdiff td.add {
-	color: black;
-	background: #cfc;
+	color: var(--text-primary);
+	background: var(--diff-add-bg);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff td.add_dark {
-	color: black;
-	background: #aca;
+	color: var(--text-primary);
+	background: var(--diff-add-dark);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff span.add {
-	background: #cfc;
+	background: var(--diff-add-bg);
 	font-weight: bold;
 }
 
 div#cgit table.ssdiff td.del {
-	color: black;
-	background: #fcc;
+	color: var(--text-primary);
+	background: var(--diff-del-bg);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff td.del_dark {
-	color: black;
-	background: #caa;
+	color: var(--text-primary);
+	background: var(--diff-del-dark);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff span.del {
-	background: #fcc;
+	background: var(--diff-del-bg);
 	font-weight: bold;
 }
 
 div#cgit table.ssdiff td.changed {
-	color: black;
-	background: #ffc;
+	color: var(--text-primary);
+	background: var(--diff-changed-bg);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff td.changed_dark {
-	color: black;
-	background: #cca;
+	color: var(--text-primary);
+	background: var(--diff-changed-dark);
 	min-width: 50%;
 }
 
 div#cgit table.ssdiff td.lineno {
-	color: black;
-	background: #eee;
+	color: var(--text-primary);
+	background: var(--bg-tertiary);
 	text-align: right;
 	width: 3em;
 	min-width: 3em;
 }
 
 div#cgit table.ssdiff td.hunk {
-	color: black;
-	background: #ccf;
-	border-top: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
+	color: var(--text-primary);
+	background: var(--diff-hunk-bg);
+	border-top: solid 1px var(--border-dark);
+	border-bottom: solid 1px var(--border-dark);
 }
 
 div#cgit table.ssdiff td.head {
-	border-top: solid 1px #aaa;
-	border-bottom: solid 1px #aaa;
+	border-top: solid 1px var(--border-dark);
+	border-bottom: solid 1px var(--border-dark);
 }
 
 div#cgit table.ssdiff td.head div.head {
 	font-weight: bold;
-	color: black;
+	color: var(--text-primary);
 }
 
 div#cgit table.ssdiff td.foot {
-	border-top: solid 1px #aaa;
+	border-top: solid 1px var(--border-dark);
 	border-left: none;
 	border-right: none;
 	border-bottom: none;

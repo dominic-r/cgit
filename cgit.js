@@ -1,4 +1,4 @@
-/* cgit.js: javacript functions for cgit
+/* cgit.js: javascript functions for cgit
  *
  * Copyright (C) 2006-2018 cgit Development Team <cgit@lists.zx2c4.com>
  *
@@ -6,9 +6,66 @@
  *   (see COPYING for full license text)
  */
 
+/* Theme management */
+var THEME_KEY = 'cgit-theme';
+var THEMES = ['auto', 'light', 'dark'];
+
+function getStoredTheme() {
+	try {
+		return localStorage.getItem(THEME_KEY);
+	} catch (e) {
+		return null;
+	}
+}
+
+function getCurrentTheme() {
+	return getStoredTheme() || 'auto';
+}
+
+function setTheme(theme) {
+	try {
+		if (theme === 'auto') {
+			document.documentElement.removeAttribute('data-theme');
+			localStorage.removeItem(THEME_KEY);
+		} else {
+			document.documentElement.setAttribute('data-theme', theme);
+			localStorage.setItem(THEME_KEY, theme);
+		}
+	} catch (e) {
+		if (theme !== 'auto') {
+			document.documentElement.setAttribute('data-theme', theme);
+		}
+	}
+	updateThemeToggle();
+}
+
+function cycleTheme() {
+	var current = getCurrentTheme();
+	var idx = THEMES.indexOf(current);
+	var next = THEMES[(idx + 1) % THEMES.length];
+	setTheme(next);
+}
+
+function updateThemeToggle() {
+	var toggle = document.getElementById('theme-toggle');
+	if (toggle) {
+		toggle.textContent = getCurrentTheme();
+	}
+}
+
+function initTheme() {
+	var stored = getStoredTheme();
+	if (stored) {
+		document.documentElement.setAttribute('data-theme', stored);
+	}
+}
+
+// Initialize theme immediately
+initTheme();
+
 (function () {
 
-/* This follows the logic and suffixes used in ui-shared.c */
+/* Age rendering - follows the logic and suffixes used in ui-shared.c */
 
 var age_classes = [ "age-mins", "age-hours", "age-days",    "age-weeks",    "age-months",    "age-years" ];
 var age_suffix =  [ "min.",     "hours",     "days",        "weeks",        "months",        "years",         "years" ];
@@ -51,17 +108,11 @@ function aging() {
 		}
 	}
 
-	/*
-	 * We only need to come back when the age might have changed.
-	 * Eg, if everything is counted in hours already, once per
-	 * 5 minutes is accurate enough.
-	 */
-
 	window.setTimeout(aging, next * 1000);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	/* we can do the aging on DOM content load since no layout dependency */
+	updateThemeToggle();
 	aging();
 }, false);
 
