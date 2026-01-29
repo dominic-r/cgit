@@ -22,12 +22,29 @@ struct walk_tree_context {
 static void print_text_buffer(const char *name, char *buf, unsigned long size)
 {
 	unsigned long lineno, idx;
+	unsigned long total_lines = 0;
+	unsigned int line_digits = 1;
 	const char *numberfmt = "<a id='n%1$d' href='#n%1$d'>%1$d</a>\n";
 
 	html("<table summary='blob content' class='blob'>\n");
 
 	if (ctx.cfg.enable_tree_linenumbers) {
-		html("<tr><td class='linenumbers'><pre>");
+		if (size) {
+			unsigned long tmp_lines;
+
+			total_lines = 1;
+			for (idx = 0; idx < size - 1; idx++) {
+				if (buf[idx] == '\n')
+					total_lines++;
+			}
+			tmp_lines = total_lines;
+			line_digits = 0;
+			do {
+				line_digits++;
+				tmp_lines /= 10;
+			} while (tmp_lines);
+		}
+		htmlf("<tr><td class='linenumbers' style='width:%uch'><pre>", line_digits);
 		idx = 0;
 		lineno = 0;
 
