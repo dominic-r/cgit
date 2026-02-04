@@ -41,6 +41,7 @@ static int get_commit_count(const char *tip, unsigned long *count)
 	struct commit *commit;
 	struct strvec rev_argv = STRVEC_INIT;
 	int must_free_tip = 0;
+	int ret = 0;
 
 	*count = 0;
 	tip = disambiguate_ref(tip ? tip : "HEAD", &must_free_tip);
@@ -52,22 +53,21 @@ static int get_commit_count(const char *tip, unsigned long *count)
 	setup_revisions(rev_argv.nr, rev_argv.v, &rev, NULL);
 	strvec_clear(&rev_argv);
 
-	if (prepare_revision_walk(&rev)) {
-		if (must_free_tip)
-			free((char *)tip);
-		return 0;
-	}
+	if (prepare_revision_walk(&rev))
+		goto done;
 
 	while ((commit = get_revision(&rev)) != NULL) {
 		(*count)++;
-		release_commit_memory(the_repository->parsed_objects, commit);
-		commit->parents = NULL;
 	}
+	ret = 1;
 
+done:
+	release_revisions(&rev);
+	clear_object_flags(the_repository, 0xffffffffu);
 	if (must_free_tip)
 		free((char *)tip);
 
-	return 1;
+	return ret;
 }
 
 static void print_url(const char *url)
