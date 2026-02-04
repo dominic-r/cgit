@@ -283,8 +283,9 @@ max-repodesc-length::
 	on the repository index page. Default value: "80".
 
 	max-stats::
-		Set the default maximum statistics period. Valid values are "week",
-		"month", "quarter" and "year". Default value: "week". See also:
+		Set the default maximum statistics period. Valid values are "day",
+		"week", "month", "year" and "quarter". Default value: "year"
+		(which enables day/week/month/year views by default). See also:
 		"repo.max-stats".
 
 mimetype.<ext>::

@@ -401,7 +401,7 @@ static void prepare_context(void)
 	ctx.cfg.max_msg_len = 80;
 	ctx.cfg.max_repodesc_len = 80;
 	ctx.cfg.max_blob_size = 0;
-	ctx.cfg.max_stats = cgit_find_stats_period("week", NULL);
+	ctx.cfg.max_stats = cgit_find_stats_period("year", NULL);
 	ctx.cfg.project_list = NULL;
 	ctx.cfg.renamelimit = -1;
 	ctx.cfg.remove_suffix = 0;
