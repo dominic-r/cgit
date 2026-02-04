@@ -276,17 +276,19 @@ static struct string_list collect_stats(const struct cgit_period *period)
 		strvec_push(&rev_argv, ctx.qry.path);
 	}
 	repo_init_revisions(the_repository, &rev, NULL);
-	rev.abbrev = DEFAULT_ABBREV;
-	rev.commit_format = CMIT_FMT_DEFAULT;
-	rev.verbose_header = 1;
-	rev.show_root_diff = 0;
+	rev.ignore_missing = 1;
 	setup_revisions(rev_argv.nr, rev_argv.v, &rev, NULL);
-	prepare_revision_walk(&rev);
+	rev.simplify_history = 0;
+	if (prepare_revision_walk(&rev)) {
+		strvec_clear(&rev_argv);
+		release_revisions(&rev);
+		clear_object_flags(the_repository, 0xffffffffu);
+		memset(&authors, 0, sizeof(authors));
+		return authors;
+	}
 	memset(&authors, 0, sizeof(authors));
 	while ((commit = get_revision(&rev)) != NULL) {
 		add_commit(&authors, commit, period);
-		release_commit_memory(the_repository->parsed_objects, commit);
-		commit->parents = NULL;
 	}
 	strvec_clear(&rev_argv);
 	release_revisions(&rev);
@@ -309,19 +311,15 @@ static int get_oldest_commit_time(time_t *oldest)
 	}
 
 	repo_init_revisions(the_repository, &rev, NULL);
-	rev.abbrev = DEFAULT_ABBREV;
-	rev.commit_format = CMIT_FMT_DEFAULT;
-	rev.verbose_header = 1;
-	rev.show_root_diff = 0;
+	rev.ignore_missing = 1;
 	setup_revisions(rev_argv.nr, rev_argv.v, &rev, NULL);
+	rev.simplify_history = 0;
 	if (prepare_revision_walk(&rev))
 		goto done;
 
 	while ((commit = get_revision(&rev)) != NULL) {
 		if (*oldest == 0 || *oldest > commit->date)
 			*oldest = commit->date;
-		release_commit_memory(the_repository->parsed_objects, commit);
-		commit->parents = NULL;
 	}
 
 done:
@@ -489,12 +487,11 @@ static void collect_multi_stats(struct period_stats *stats, int nr)
 	}
 
 	repo_init_revisions(the_repository, &rev, NULL);
-	rev.abbrev = DEFAULT_ABBREV;
-	rev.commit_format = CMIT_FMT_DEFAULT;
-	rev.verbose_header = 1;
-	rev.show_root_diff = 0;
+	rev.ignore_missing = 1;
 	setup_revisions(rev_argv.nr, rev_argv.v, &rev, NULL);
-	prepare_revision_walk(&rev);
+	rev.simplify_history = 0;
+	if (prepare_revision_walk(&rev))
+		goto out;
 
 	while ((commit = get_revision(&rev)) != NULL) {
 		info = cgit_parse_commit(commit);
@@ -505,10 +502,9 @@ static void collect_multi_stats(struct period_stats *stats, int nr)
 			}
 		}
 		cgit_free_commitinfo(info);
-		release_commit_memory(the_repository->parsed_objects, commit);
-		commit->parents = NULL;
 	}
 
+out:
 	strvec_clear(&rev_argv);
 	release_revisions(&rev);
 	clear_object_flags(the_repository, 0xffffffffu);
