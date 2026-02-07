@@ -26,6 +26,7 @@
 #include "ui-summary.h"
 #include "ui-tag.h"
 #include "ui-tree.h"
+#include "ui-search.h"
 
 static void HEAD_fn(void)
 {
@@ -159,6 +160,11 @@ static void tag_fn(void)
 	cgit_print_tag(ctx.qry.oid);
 }
 
+static void search_fn(void)
+{
+	cgit_print_search(ctx.qry.search, ctx.qry.head, ctx.qry.grep);
+}
+
 static void tree_fn(void)
 {
 	cgit_print_tree(ctx.qry.oid, ctx.qry.path);
@@ -186,6 +192,7 @@ struct cgit_cmd *cgit_get_cmd(void)
 		def_cmd(rawdiff, 1, 1, 0),
 		def_cmd(refs, 1, 0, 0),
 		def_cmd(repolist, 0, 0, 0),
+		def_cmd(search, 1, 0, 0),
 		def_cmd(snapshot, 1, 0, 0),
 		def_cmd(stats, 1, 1, 0),
 		def_cmd(summary, 1, 0, 0),

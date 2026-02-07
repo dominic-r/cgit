@@ -93,6 +93,7 @@ CGIT_OBJ_NAMES += ui-ssdiff.o
 CGIT_OBJ_NAMES += ui-stats.o
 CGIT_OBJ_NAMES += ui-summary.o
 CGIT_OBJ_NAMES += ui-tag.o
+CGIT_OBJ_NAMES += ui-search.o
 CGIT_OBJ_NAMES += ui-tree.o
 
 CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES))

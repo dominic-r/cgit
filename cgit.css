@@ -1278,3 +1278,51 @@ div#cgit table.ssdiff td.space div {
 .highlight .gh,
 .highlight .gu { color: var(--hl-keyword); font-weight: bold; }
 .highlight .gp { color: var(--hl-comment); font-weight: bold; }
+
+/* Search results */
+div#cgit table.search-results { width: 100%; border-collapse: collapse; }
+div#cgit table.search-results td.search-path { font-family: monospace; }
+div#cgit table.search-results tr.search-file td {
+	padding-top: 1em;
+	padding-bottom: 0.25em;
+	font-weight: bold;
+	border-bottom: 1px solid var(--border-light);
+}
+div#cgit table.search-results td.search-lineno {
+	font-family: monospace;
+	text-align: right;
+	color: var(--lineno-color);
+	padding: 0 0.5em;
+	white-space: nowrap;
+	width: 1%;
+	user-select: none;
+	border-right: 1px solid var(--border-light);
+	background: var(--bg-secondary);
+}
+div#cgit table.search-results td.search-lineno a {
+	color: var(--lineno-color);
+	text-decoration: none;
+}
+div#cgit table.search-results td.search-lineno a:hover {
+	color: var(--lineno-hover);
+}
+div#cgit table.search-results td.search-line {
+	font-family: monospace;
+	white-space: pre;
+	padding: 0 0.5em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+div#cgit table.search-results td.search-line.match {
+	background: var(--bg-highlight);
+}
+div#cgit table.search-results td.search-line.context {
+	color: var(--text-muted);
+}
+div#cgit table.search-results td.search-sep {
+	height: 0.5em;
+	border-bottom: 1px dashed var(--border-light);
+}
+div#cgit .search-match { font-weight: bold; color: var(--link-color); }
+div#cgit .search-form { margin-bottom: 1em; }
+div#cgit .search-info { color: var(--text-muted); margin-bottom: 1em; }

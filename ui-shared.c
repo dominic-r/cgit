@@ -375,6 +375,12 @@ void cgit_blame_link(const char *name, const char *title, const char *class,
 	reporevlink("blame", name, title, class, head, rev, path);
 }
 
+void cgit_search_link(const char *name, const char *title, const char *class,
+		      const char *head, const char *path)
+{
+	reporevlink("search", name, title, class, head, NULL, path);
+}
+
 void cgit_log_link(const char *name, const char *title, const char *class,
 		   const char *head, const char *rev, const char *path,
 		   int ofs, const char *grep, const char *pattern, int showmsg,
@@ -582,6 +588,9 @@ static void cgit_self_link(char *name, const char *title, const char *class)
 	else if (!strcmp(ctx.qry.page, "stats"))
 		cgit_stats_link(name, title, class, ctx.qry.head,
 				ctx.qry.path);
+	else if (!strcmp(ctx.qry.page, "search"))
+		cgit_search_link(name, title, class, ctx.qry.head,
+				 ctx.qry.path);
 	else {
 		/* Don't known how to make link for this page */
 		repolink(title, class, ctx.qry.page, ctx.qry.head, ctx.qry.path);
@@ -1119,6 +1128,8 @@ void cgit_print_pageheader(void)
 				 ctx.qry.head, ctx.qry.oid, ctx.qry.vpath);
 		cgit_diff_link("diff", NULL, hc("diff"), ctx.qry.head,
 			       ctx.qry.oid, ctx.qry.oid2, ctx.qry.vpath);
+		cgit_search_link("search", NULL, hc("search"),
+				 ctx.qry.head, NULL);
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);
@@ -1130,19 +1141,28 @@ void cgit_print_pageheader(void)
 		html("</td><td class='form'>");
 		html("<form class='right' method='get' action='");
 		if (ctx.cfg.virtual_root) {
-			char *fileurl = cgit_fileurl(ctx.qry.repo, "log",
+			const char *form_page = (ctx.qry.page && !strcmp(ctx.qry.page, "search")) ? "search" : "log";
+			char *fileurl = cgit_fileurl(ctx.qry.repo, form_page,
 						   ctx.qry.vpath, NULL);
 			html_url_path(fileurl);
 			free(fileurl);
 		}
 		html("'>\n");
-		cgit_add_hidden_formfields(1, 0, "log");
-		html("<select name='qt'>\n");
-		html_option("grep", "log msg", ctx.qry.grep);
-		html_option("author", "author", ctx.qry.grep);
-		html_option("committer", "committer", ctx.qry.grep);
-		html_option("range", "range", ctx.qry.grep);
-		html("</select>\n");
+		if (ctx.qry.page && !strcmp(ctx.qry.page, "search")) {
+			cgit_add_hidden_formfields(1, 0, "search");
+			html("<select name='qt'>\n");
+			html_option("file", "file name", ctx.qry.grep);
+			html_option("code", "code", ctx.qry.grep);
+			html("</select>\n");
+		} else {
+			cgit_add_hidden_formfields(1, 0, "log");
+			html("<select name='qt'>\n");
+			html_option("grep", "log msg", ctx.qry.grep);
+			html_option("author", "author", ctx.qry.grep);
+			html_option("committer", "committer", ctx.qry.grep);
+			html_option("range", "range", ctx.qry.grep);
+			html("</select>\n");
+		}
 		html("<input class='txt' type='search' size='10' name='q' value='");
 		html_attr(ctx.qry.search);
 		html("'/>\n");
