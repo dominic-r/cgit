@@ -335,6 +335,8 @@ void cgit_print_pageheader(void)
 		if (ctx.repo->max_stats)
 			cgit_stats_link("stats", NULL, hc("stats"),
 					ctx.qry.head, ctx.qry.vpath);
+		cgit_compare_link("compare", NULL, hc("compare"),
+				  ctx.qry.head, NULL, NULL);
 		if (ctx.repo->homepage) {
 			html("<a href='");
 			html_attr(ctx.repo->homepage);
