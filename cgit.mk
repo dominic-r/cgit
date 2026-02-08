@@ -20,6 +20,8 @@ $(CGIT_PREFIX)VERSION: force-version
 CGIT_CFLAGS += -DCGIT_CONFIG='"$(CGIT_CONFIG)"'
 CGIT_CFLAGS += -DCGIT_SCRIPT_NAME='"$(CGIT_SCRIPT_NAME)"'
 CGIT_CFLAGS += -DCGIT_CACHE_ROOT='"$(CACHE_ROOT)"'
+CGIT_CFLAGS += -I$(CGIT_PREFIX)include
+CGIT_CFLAGS += -I$(CGIT_PREFIX)include/cgit
 
 PKG_CONFIG ?= pkg-config
 
@@ -67,47 +69,73 @@ ifdef HAVE_LINUX_SENDFILE
 	CGIT_CFLAGS += -DHAVE_LINUX_SENDFILE
 endif
 
-CGIT_OBJ_NAMES += cgit.o
-CGIT_OBJ_NAMES += cache.o
-CGIT_OBJ_NAMES += cmd.o
-CGIT_OBJ_NAMES += configfile.o
-CGIT_OBJ_NAMES += filter.o
-CGIT_OBJ_NAMES += html.o
-CGIT_OBJ_NAMES += parsing.o
-CGIT_OBJ_NAMES += scan-tree.o
-CGIT_OBJ_NAMES += shared.o
-CGIT_OBJ_NAMES += ui-atom.o
-CGIT_OBJ_NAMES += ui-blame.o
-CGIT_OBJ_NAMES += ui-blob.o
-CGIT_OBJ_NAMES += ui-clone.o
-CGIT_OBJ_NAMES += ui-commit.o
-CGIT_OBJ_NAMES += ui-compare.o
-CGIT_OBJ_NAMES += ui-diff.o
-CGIT_OBJ_NAMES += ui-log.o
-CGIT_OBJ_NAMES += ui-patch.o
-CGIT_OBJ_NAMES += ui-plain.o
-CGIT_OBJ_NAMES += ui-refs.o
-CGIT_OBJ_NAMES += ui-repolist.o
-CGIT_OBJ_NAMES += ui-shared.o
-CGIT_OBJ_NAMES += ui-snapshot.o
-CGIT_OBJ_NAMES += ui-ssdiff.o
-CGIT_OBJ_NAMES += ui-stats.o
-CGIT_OBJ_NAMES += ui-summary.o
-CGIT_OBJ_NAMES += ui-tag.o
-CGIT_OBJ_NAMES += ui-search.o
-CGIT_OBJ_NAMES += ui-tree.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit.o
+CGIT_CORE_OBJ_NAMES += src/core/cache.o
+CGIT_CORE_OBJ_NAMES += src/core/cache-processing.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit-auth.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit-config.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit-context.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit-repo.o
+CGIT_CORE_OBJ_NAMES += src/core/cgit-repolist.o
+CGIT_CORE_OBJ_NAMES += src/core/cmd.o
+CGIT_CORE_OBJ_NAMES += src/core/configfile.o
+CGIT_CORE_OBJ_NAMES += src/core/filter.o
+CGIT_CORE_OBJ_NAMES += src/core/filter-exec.o
+CGIT_CORE_OBJ_NAMES += src/core/filter-lua.o
+CGIT_CORE_OBJ_NAMES += src/core/html.o
+CGIT_CORE_OBJ_NAMES += src/core/parsing.o
+CGIT_CORE_OBJ_NAMES += src/core/scan-tree.o
+CGIT_CORE_OBJ_NAMES += src/core/shared.o
+CGIT_CORE_OBJ_NAMES += src/core/shared-diff.o
+CGIT_CORE_OBJ_NAMES += src/core/shared-utils.o
+
+CGIT_UI_OBJ_NAMES += src/ui/ui-atom.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-blame.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-blob.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-clone.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-commit.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-compare.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-diff.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-diff-render.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-log.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-log-commit.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-patch.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-plain.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-refs.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-repolist.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-search-render.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-forms.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-layout.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-links-nav.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-links-submodule.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-links-url.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-snapshot.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-shared-time-http.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-snapshot.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-ssdiff.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-stats.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-stats-periods.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-stats-render.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-summary.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-tag.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-search.o
+CGIT_UI_OBJ_NAMES += src/ui/ui-tree.o
+
+CGIT_OBJ_NAMES += $(CGIT_CORE_OBJ_NAMES)
+CGIT_OBJ_NAMES += $(CGIT_UI_OBJ_NAMES)
 
 CGIT_OBJS := $(addprefix $(CGIT_PREFIX),$(CGIT_OBJ_NAMES))
 
 # Only cgit.c reference CGIT_VERSION so we only rebuild its objects when the
 # version changes.
-CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),cgit.o cgit.sp)
+CGIT_VERSION_OBJS := $(addprefix $(CGIT_PREFIX),src/core/cgit.o src/core/cgit.sp)
 $(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
 $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
 
 # ui-shared.c uses __DATE__/__TIME__ for asset cache busting, so always rebuild.
-$(CGIT_PREFIX)ui-shared.o: FORCE
+$(CGIT_PREFIX)src/ui/ui-shared.o: FORCE
 
 # Git handles dependencies using ":=" so dependencies in CGIT_OBJ are not
 # handled by that and we must handle them ourselves.
@@ -117,11 +145,10 @@ ifneq ($(cgit_dep_files_present),)
 include $(cgit_dep_files_present)
 endif
 
-ifeq ($(wildcard $(CGIT_PREFIX).depend),)
-missing_dep_dirs += $(CGIT_PREFIX).depend
-endif
+cgit_dep_dirs := $(addsuffix .depend,$(sort $(dir $(CGIT_OBJS))))
+missing_dep_dirs += $(filter-out $(wildcard $(cgit_dep_dirs)),$(cgit_dep_dirs))
 
-$(CGIT_PREFIX).depend:
+$(cgit_dep_dirs):
 	@mkdir -p $@
 
 $(CGIT_PREFIX)CGIT-CFLAGS: FORCE

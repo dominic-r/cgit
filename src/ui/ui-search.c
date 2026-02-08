@@ -10,44 +10,12 @@
 #include "ui-search.h"
 #include "html.h"
 #include "ui-shared.h"
+#include "ui-search-render.h"
 
 #define MAX_FILE_RESULTS 100
 #define MAX_CODE_RESULTS 50
 #define MAX_MATCHES_PER_FILE 5
 #define CONTEXT_LINES 2
-#define MAX_LINE_LEN 200
-
-struct context_line {
-	int lineno;
-	int is_match;
-	char line[MAX_LINE_LEN + 1];
-};
-
-struct code_match {
-	int lineno;		/* line number of the match itself */
-	struct context_line *context;
-	int context_count;
-};
-
-struct search_result {
-	char *path;
-	unsigned short mode;
-	struct code_match *matches;
-	int match_count;
-};
-
-struct search_context {
-	const char *pattern;
-	struct search_result *results;
-	int count;
-	int alloc;
-	int max_results;
-};
-
-struct code_search_ctx {
-	struct search_context *sctx;
-	struct grep_opt *opt;
-};
 
 static void free_search_results(struct search_context *sctx)
 {
@@ -77,7 +45,7 @@ static void add_result(struct search_context *sctx, const char *path,
 }
 
 /* Case-insensitive substring search */
-static const char *strcasestr_safe(const char *haystack, const char *needle)
+const char *cgit_strcasestr_safe(const char *haystack, const char *needle)
 {
 	size_t nlen = strlen(needle);
 	if (!nlen)
@@ -105,8 +73,8 @@ static const char *strcasestr_bounded(const char *haystack, const char *haystack
 	return NULL;
 }
 
-static int file_search_cb(const struct object_id *oid, struct strbuf *base,
-			   const char *pathname, unsigned mode, void *cbdata)
+int cgit_file_search_cb(const struct object_id *oid, struct strbuf *base,
+			const char *pathname, unsigned mode, void *cbdata)
 {
 	struct search_context *sctx = cbdata;
 	struct strbuf fullpath = STRBUF_INIT;
@@ -123,15 +91,15 @@ static int file_search_cb(const struct object_id *oid, struct strbuf *base,
 	strbuf_addbuf(&fullpath, base);
 	strbuf_addstr(&fullpath, pathname);
 
-	if (strcasestr_safe(fullpath.buf, sctx->pattern))
+	if (cgit_strcasestr_safe(fullpath.buf, sctx->pattern))
 		add_result(sctx, fullpath.buf, mode);
 
 	strbuf_release(&fullpath);
 	return 0;
 }
 
-static int code_search_cb(const struct object_id *oid, struct strbuf *base,
-			   const char *pathname, unsigned mode, void *cbdata)
+int cgit_code_search_cb(const struct object_id *oid, struct strbuf *base,
+			const char *pathname, unsigned mode, void *cbdata)
 {
 	struct code_search_ctx *cs = cbdata;
 	struct strbuf fullpath = STRBUF_INIT;
@@ -222,8 +190,8 @@ static int code_search_cb(const struct object_id *oid, struct strbuf *base,
 
 						cm[i].context[k].lineno = li + 1;
 						cm[i].context[k].is_match = (li == mi);
-						if (line_len > MAX_LINE_LEN)
-							line_len = MAX_LINE_LEN;
+						if (line_len > CGIT_SEARCH_MAX_LINE_LEN)
+							line_len = CGIT_SEARCH_MAX_LINE_LEN;
 						memcpy(cm[i].context[k].line,
 						       line_starts[li], line_len);
 						cm[i].context[k].line[line_len] = '\0';
@@ -246,175 +214,6 @@ static int code_search_cb(const struct object_id *oid, struct strbuf *base,
 	return 0;
 }
 
-static void print_search_form(const char *pattern, const char *head,
-			      const char *search_type)
-{
-	html("<form class='search-form' method='get'");
-	if (ctx.cfg.virtual_root) {
-		char *fileurl = cgit_fileurl(ctx.qry.repo, "search",
-					    NULL, NULL);
-		html(" action='");
-		html_url_path(fileurl);
-		html("'");
-		free(fileurl);
-	}
-	html(">\n");
-	cgit_add_hidden_formfields(1, 0, "search");
-	html("<select name='qt'>\n");
-	html_option("file", "file name", search_type);
-	html_option("code", "code", search_type);
-	html("</select>\n");
-	html("<input class='txt' type='search' size='30' name='q' value='");
-	html_attr(pattern ? pattern : "");
-	html("'/>\n");
-	html("<input type='submit' value='search'/>\n");
-	html("</form>\n");
-}
-
-static void search_files(struct commit *commit, struct search_context *sctx)
-{
-	struct tree *tree;
-	struct pathspec paths = { .nr = 0 };
-
-	tree = repo_get_commit_tree(the_repository, commit);
-	if (!tree)
-		return;
-
-	read_tree(the_repository, tree, &paths, file_search_cb, sctx);
-}
-
-static void render_file_results(struct search_context *sctx, const char *head)
-{
-	int i;
-
-	if (!sctx->count) {
-		html("<div class='search-info'>No files found.</div>\n");
-		return;
-	}
-
-	htmlf("<div class='search-info'>%d file%s found</div>\n",
-	      sctx->count, sctx->count == 1 ? "" : "s");
-
-	html("<table class='list search-results'>\n");
-	html("<tr class='nohover'>");
-	html("<th class='left'>Path</th>");
-	html("</tr>\n");
-
-	for (i = 0; i < sctx->count; i++) {
-		html("<tr><td class='search-path'>");
-		cgit_tree_link(sctx->results[i].path, NULL, NULL,
-			       head, NULL, sctx->results[i].path);
-		html("</td></tr>\n");
-	}
-	html("</table>\n");
-}
-
-static void search_code(struct commit *commit, struct search_context *sctx)
-{
-	struct tree *tree;
-	struct pathspec paths = { .nr = 0 };
-	struct grep_opt opt;
-	struct code_search_ctx cs_ctx;
-
-	tree = repo_get_commit_tree(the_repository, commit);
-	if (!tree)
-		return;
-
-	grep_init(&opt, the_repository);
-	opt.ignore_case = 1;
-	opt.status_only = 1;
-	append_grep_pattern(&opt, sctx->pattern, "search", 0, GREP_PATTERN);
-	compile_grep_patterns(&opt);
-
-	cs_ctx.sctx = sctx;
-	cs_ctx.opt = &opt;
-
-	read_tree(the_repository, tree, &paths, code_search_cb, &cs_ctx);
-
-	free_grep_patterns(&opt);
-}
-
-static void html_txt_highlighted(const char *txt, const char *pattern)
-{
-	size_t plen = strlen(pattern);
-	const char *match;
-
-	while (*txt) {
-		match = strcasestr_safe(txt, pattern);
-		if (!match) {
-			html_txt(txt);
-			return;
-		}
-		html_ntxt(txt, match - txt);
-		html("<span class='search-match'>");
-		html_ntxt(match, plen);
-		html("</span>");
-		txt = match + plen;
-	}
-}
-
-static void render_code_results(struct search_context *sctx, const char *head)
-{
-	int i, j;
-
-	if (!sctx->count) {
-		html("<div class='search-info'>No results found.</div>\n");
-		return;
-	}
-
-	htmlf("<div class='search-info'>Found matches in %d file%s</div>\n",
-	      sctx->count, sctx->count == 1 ? "" : "s");
-
-	html("<table class='list search-results'>\n");
-
-	for (i = 0; i < sctx->count; i++) {
-		html("<tr class='search-file nohover'><td colspan='2'>");
-		cgit_tree_link(sctx->results[i].path, NULL, NULL,
-			       head, NULL, sctx->results[i].path);
-		html("</td></tr>\n");
-
-		for (j = 0; j < sctx->results[i].match_count; j++) {
-			struct code_match *m = &sctx->results[i].matches[j];
-			int k;
-
-			/* Separator between match groups */
-			if (j > 0)
-				html("<tr class='nohover'><td colspan='2' class='search-sep'></td></tr>\n");
-
-			for (k = 0; k < m->context_count; k++) {
-				struct context_line *cl = &m->context[k];
-				const char *cls = cl->is_match ? "search-line match" : "search-line context";
-
-				htmlf("<tr class='nohover'><td class='search-lineno'>");
-				htmlf("<a href='");
-				if (ctx.cfg.virtual_root) {
-					html_url_path(ctx.cfg.virtual_root);
-					html_url_path(ctx.repo->url);
-					if (ctx.repo->url[strlen(ctx.repo->url) - 1] != '/')
-						html("/");
-					html_url_path("tree");
-					html("/");
-					html_url_path(sctx->results[i].path);
-				} else {
-					html_url_path(ctx.cfg.script_name);
-					html("?url=");
-					html_url_arg(ctx.repo->url);
-					html("/tree/");
-					html_url_arg(sctx->results[i].path);
-				}
-				htmlf("#n%d'>%d</a>", cl->lineno, cl->lineno);
-				htmlf("</td><td class='%s'>", cls);
-				if (cl->is_match)
-					html_txt_highlighted(cl->line, sctx->pattern);
-				else
-					html_txt(cl->line);
-				html("</td></tr>\n");
-			}
-		}
-	}
-	html("</table>\n");
-}
-
 void cgit_print_search(const char *pattern, const char *head,
 		       const char *search_type)
 {
@@ -429,7 +228,7 @@ void cgit_print_search(const char *pattern, const char *head,
 		head = ctx.repo->defbranch;
 
 	cgit_print_layout_start();
-	print_search_form(pattern, head, search_type);
+	cgit_print_search_form(pattern, head, search_type);
 
 	if (!pattern || !*pattern) {
 		cgit_print_layout_end();
@@ -454,12 +253,12 @@ void cgit_print_search(const char *pattern, const char *head,
 	sctx.pattern = pattern;
 	if (is_code) {
 		sctx.max_results = MAX_CODE_RESULTS;
-		search_code(commit, &sctx);
-		render_code_results(&sctx, head);
+		cgit_search_code(commit, &sctx);
+		cgit_render_code_results(&sctx, head);
 	} else {
 		sctx.max_results = MAX_FILE_RESULTS;
-		search_files(commit, &sctx);
-		render_file_results(&sctx, head);
+		cgit_search_files(commit, &sctx);
+		cgit_render_file_results(&sctx, head);
 	}
 
 	if (sctx.count >= sctx.max_results)

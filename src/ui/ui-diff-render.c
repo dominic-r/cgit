@@ -1,11 +1,3 @@
-/* ui-diff.c: show diff between two blobs
- *
- * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
- *
- * Licensed under GNU General Public License v2
- *   (see COPYING for full license text)
- */
-
 #define USE_THE_REPOSITORY_VARIABLE
 
 #include "cgit.h"
@@ -13,15 +5,9 @@
 #include "html.h"
 #include "ui-shared.h"
 #include "ui-ssdiff.h"
+#include "ui-diff-render.h"
 
-struct object_id old_rev_oid[1];
-struct object_id new_rev_oid[1];
-
-static int files, slots;
-static int total_adds, total_rems, max_changes;
-static int lines_added, lines_removed;
-
-static struct fileinfo {
+struct fileinfo {
 	char status;
 	struct object_id old_oid[1];
 	struct object_id new_oid[1];
@@ -34,9 +20,14 @@ static struct fileinfo {
 	unsigned long old_size;
 	unsigned long new_size;
 	unsigned int binary:1;
-} *items;
+};
 
-static int use_ssdiff = 0;
+static int files, slots;
+static int total_adds, total_rems, max_changes;
+static int lines_added, lines_removed;
+static struct fileinfo *items;
+
+static int use_ssdiff;
 static struct diff_filepair *current_filepair;
 static const char *current_prefix;
 
@@ -48,6 +39,16 @@ struct diff_filespec *cgit_get_current_old_file(void)
 struct diff_filespec *cgit_get_current_new_file(void)
 {
 	return current_filepair->two;
+}
+
+void cgit_diff_set_current_prefix(const char *prefix)
+{
+	current_prefix = prefix;
+}
+
+void cgit_diff_set_use_ssdiff(int enabled)
+{
+	use_ssdiff = enabled;
 }
 
 static void print_fileinfo(struct fileinfo *info)
@@ -101,7 +102,8 @@ static void print_fileinfo(struct fileinfo *info)
 	htmlf("</td><td class='%s'>", class);
 	cgit_diff_link(info->new_path, NULL, NULL, ctx.qry.head, ctx.qry.oid,
 		       ctx.qry.oid2, info->new_path);
-	if (info->status == DIFF_STATUS_COPIED || info->status == DIFF_STATUS_RENAMED) {
+	if (info->status == DIFF_STATUS_COPIED ||
+	    info->status == DIFF_STATUS_RENAMED) {
 		htmlf(" (%s from ",
 		      info->status == DIFF_STATUS_COPIED ? "copied" : "renamed");
 		html_txt(info->old_path);
@@ -115,7 +117,8 @@ static void print_fileinfo(struct fileinfo *info)
 	}
 	htmlf("%d", info->added + info->removed);
 	html("</td><td class='graph'>");
-	htmlf("<table summary='file diffstat' width='%d%%'><tr>", (max_changes > 100 ? 100 : max_changes));
+	htmlf("<table summary='file diffstat' width='%d%%'><tr>",
+	      (max_changes > 100 ? 100 : max_changes));
 	htmlf("<td class='add' style='width: %.1f%%;'/>",
 	      info->added * 100.0 / max_changes);
 	htmlf("<td class='rem' style='width: %.1f%%;'/>",
@@ -171,27 +174,27 @@ static void inspect_filepair(struct diff_filepair *pair)
 			slots = slots * 2;
 		items = xrealloc(items, slots * sizeof(struct fileinfo));
 	}
-	items[files-1].status = pair->status;
-	oidcpy(items[files-1].old_oid, &pair->one->oid);
-	oidcpy(items[files-1].new_oid, &pair->two->oid);
-	items[files-1].old_mode = pair->one->mode;
-	items[files-1].new_mode = pair->two->mode;
-	items[files-1].old_path = xstrdup(pair->one->path);
-	items[files-1].new_path = xstrdup(pair->two->path);
-	items[files-1].added = lines_added;
-	items[files-1].removed = lines_removed;
-	items[files-1].old_size = old_size;
-	items[files-1].new_size = new_size;
-	items[files-1].binary = binary;
+	items[files - 1].status = pair->status;
+	oidcpy(items[files - 1].old_oid, &pair->one->oid);
+	oidcpy(items[files - 1].new_oid, &pair->two->oid);
+	items[files - 1].old_mode = pair->one->mode;
+	items[files - 1].new_mode = pair->two->mode;
+	items[files - 1].old_path = xstrdup(pair->one->path);
+	items[files - 1].new_path = xstrdup(pair->two->path);
+	items[files - 1].added = lines_added;
+	items[files - 1].removed = lines_removed;
+	items[files - 1].old_size = old_size;
+	items[files - 1].new_size = new_size;
+	items[files - 1].binary = binary;
 	if (lines_added + lines_removed > max_changes)
 		max_changes = lines_added + lines_removed;
 	total_adds += lines_added;
 	total_rems += lines_removed;
 }
 
-static void cgit_print_diffstat(const struct object_id *old_oid,
-				const struct object_id *new_oid,
-				const char *prefix)
+void cgit_print_diffstat(const struct object_id *old_oid,
+			 const struct object_id *new_oid,
+			 const char *prefix)
 {
 	int i;
 
@@ -208,7 +211,7 @@ static void cgit_print_diffstat(const struct object_id *old_oid,
 	max_changes = 0;
 	cgit_diff_tree(old_oid, new_oid, inspect_filepair, prefix,
 		       ctx.qry.ignorews);
-	for (i = 0; i<files; i++)
+	for (i = 0; i < files; i++)
 		print_fileinfo(&items[i]);
 	html("</table>");
 	html("<div class='diffstat-summary'>");
@@ -217,14 +220,13 @@ static void cgit_print_diffstat(const struct object_id *old_oid,
 	html("</div>");
 }
 
-
 /*
  * print a single line returned from xdiff
  */
 static void print_line(char *line, int len)
 {
 	char *class = "ctx";
-	char c = line[len-1];
+	char c = line[len - 1];
 
 	if (line[0] == '+')
 		class = "add";
@@ -234,10 +236,10 @@ static void print_line(char *line, int len)
 		class = "hunk";
 
 	htmlf("<div class='%s'>", class);
-	line[len-1] = '\0';
+	line[len - 1] = '\0';
 	html_txt(line);
 	html("</div>");
-	line[len-1] = c;
+	line[len - 1] = c;
 }
 
 static void header(const struct object_id *oid1, char *path1, int mode1,
@@ -260,8 +262,10 @@ static void header(const struct object_id *oid1, char *path1, int mode1,
 		htmlf("<br/>deleted file mode %.6o", mode1);
 
 	if (!subproject) {
-		abbrev1 = xstrdup(repo_find_unique_abbrev(the_repository, oid1, DEFAULT_ABBREV));
-		abbrev2 = xstrdup(repo_find_unique_abbrev(the_repository, oid2, DEFAULT_ABBREV));
+		abbrev1 = xstrdup(repo_find_unique_abbrev(the_repository, oid1,
+							 DEFAULT_ABBREV));
+		abbrev2 = xstrdup(repo_find_unique_abbrev(the_repository, oid2,
+							 DEFAULT_ABBREV));
 		htmlf("<br/>index %s..%s", abbrev1, abbrev2);
 		free(abbrev1);
 		free(abbrev2);
@@ -273,8 +277,9 @@ static void header(const struct object_id *oid1, char *path1, int mode1,
 		if (is_null_oid(oid1)) {
 			path1 = "dev/null";
 			html("<br/>--- /");
-		} else
+		} else {
 			html("<br/>--- a/");
+		}
 		if (mode1 != 0)
 			cgit_tree_link(path1, NULL, NULL, ctx.qry.head,
 				       oid_to_hex(old_rev_oid), path1);
@@ -283,8 +288,9 @@ static void header(const struct object_id *oid1, char *path1, int mode1,
 		if (is_null_oid(oid2)) {
 			path2 = "dev/null";
 			html("<br/>+++ /");
-		} else
+		} else {
 			html("<br/>+++ b/");
+		}
 		if (mode2 != 0)
 			cgit_tree_link(path2, NULL, NULL, ctx.qry.head,
 				       oid_to_hex(new_rev_oid), path2);
@@ -294,7 +300,7 @@ static void header(const struct object_id *oid1, char *path1, int mode1,
 	html("</div>");
 }
 
-static void filepair_cb(struct diff_filepair *pair)
+void cgit_diff_filepair_cb(struct diff_filepair *pair)
 {
 	unsigned long old_size = 0;
 	unsigned long new_size = 0;
@@ -315,9 +321,11 @@ static void filepair_cb(struct diff_filepair *pair)
 		cgit_ssdiff_header_end();
 	if (S_ISGITLINK(pair->one->mode) || S_ISGITLINK(pair->two->mode)) {
 		if (S_ISGITLINK(pair->one->mode))
-			print_line_fn(fmt("-Subproject %s", oid_to_hex(&pair->one->oid)), 52);
+			print_line_fn(fmt("-Subproject %s", oid_to_hex(&pair->one->oid)),
+				      52);
 		if (S_ISGITLINK(pair->two->mode))
-			print_line_fn(fmt("+Subproject %s", oid_to_hex(&pair->two->oid)), 52);
+			print_line_fn(fmt("+Subproject %s", oid_to_hex(&pair->two->oid)),
+				      52);
 		if (use_ssdiff)
 			cgit_ssdiff_footer();
 		return;
@@ -334,170 +342,4 @@ static void filepair_cb(struct diff_filepair *pair)
 	}
 	if (use_ssdiff)
 		cgit_ssdiff_footer();
-}
-
-void cgit_print_diff_ctrls(void)
-{
-	int i, curr;
-
-	html("<div class='cgit-panel'>");
-	html("<b>diff options</b>");
-	html("<form method='get'>");
-	cgit_add_hidden_formfields(1, 0, ctx.qry.page);
-	html("<table>");
-	html("<tr><td colspan='2'/></tr>");
-	html("<tr>");
-	html("<td class='label'>context:</td>");
-	html("<td class='ctrl'>");
-	html("<select name='context' onchange='this.form.submit();'>");
-	curr = ctx.qry.context;
-	if (!curr)
-		curr = 3;
-	for (i = 1; i <= 10; i++)
-		html_intoption(i, fmt("%d", i), curr);
-	for (i = 15; i <= 40; i += 5)
-		html_intoption(i, fmt("%d", i), curr);
-	html("</select>");
-	html("</td>");
-	html("</tr><tr>");
-	html("<td class='label'>space:</td>");
-	html("<td class='ctrl'>");
-	html("<select name='ignorews' onchange='this.form.submit();'>");
-	html_intoption(0, "include", ctx.qry.ignorews);
-	html_intoption(1, "ignore", ctx.qry.ignorews);
-	html("</select>");
-	html("</td>");
-	html("</tr><tr>");
-	html("<td class='label'>mode:</td>");
-	html("<td class='ctrl'>");
-	html("<select name='dt' onchange='this.form.submit();'>");
-	curr = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
-	html_intoption(0, "unified", curr);
-	html_intoption(1, "ssdiff", curr);
-	html_intoption(2, "stat only", curr);
-	html("</select></td></tr>");
-	html("<tr><td/><td class='ctrl'>");
-	html("<noscript><input type='submit' value='reload'/></noscript>");
-	html("</td></tr></table>");
-	html("</form>");
-	html("</div>");
-}
-
-void cgit_print_diff(const char *new_rev, const char *old_rev,
-		     const char *prefix, int show_ctrls, int raw)
-{
-	struct commit *commit, *commit2;
-	const struct object_id *old_tree_oid, *new_tree_oid;
-	diff_type difftype;
-
-	/*
-	 * If "follow" is set then the diff machinery needs to examine the
-	 * entire commit to detect renames so we must limit the paths in our
-	 * own callbacks and not pass the prefix to the diff machinery.
-	 */
-	if (ctx.qry.follow && ctx.cfg.enable_follow_links) {
-		current_prefix = prefix;
-		prefix = "";
-	} else {
-		current_prefix = NULL;
-	}
-
-	if (!new_rev)
-		new_rev = ctx.qry.head;
-	if (repo_get_oid(the_repository, new_rev, new_rev_oid)) {
-		cgit_print_error_page(404, "Not found",
-			"Bad object name: %s", new_rev);
-		return;
-	}
-	commit = lookup_commit_reference(the_repository, new_rev_oid);
-	if (!commit || repo_parse_commit(the_repository, commit)) {
-		cgit_print_error_page(404, "Not found",
-			"Bad commit: %s", oid_to_hex(new_rev_oid));
-		return;
-	}
-	new_tree_oid = get_commit_tree_oid(commit);
-
-	if (old_rev) {
-		if (repo_get_oid(the_repository, old_rev, old_rev_oid)) {
-			cgit_print_error_page(404, "Not found",
-				"Bad object name: %s", old_rev);
-			return;
-		}
-	} else if (commit->parents && commit->parents->item) {
-		oidcpy(old_rev_oid, &commit->parents->item->object.oid);
-	} else {
-		oidclr(old_rev_oid, the_repository->hash_algo);
-	}
-
-	if (!is_null_oid(old_rev_oid)) {
-		commit2 = lookup_commit_reference(the_repository, old_rev_oid);
-		if (!commit2 || repo_parse_commit(the_repository, commit2)) {
-			cgit_print_error_page(404, "Not found",
-				"Bad commit: %s", oid_to_hex(old_rev_oid));
-			return;
-		}
-		old_tree_oid = get_commit_tree_oid(commit2);
-	} else {
-		old_tree_oid = NULL;
-	}
-
-	if (raw) {
-		struct diff_options diffopt;
-
-		repo_diff_setup(the_repository, &diffopt);
-		diffopt.output_format = DIFF_FORMAT_PATCH;
-		diffopt.flags.recursive = 1;
-		diff_setup_done(&diffopt);
-
-		ctx.page.mimetype = "text/plain";
-		cgit_print_http_headers();
-		if (old_tree_oid) {
-			diff_tree_oid(old_tree_oid, new_tree_oid, "",
-				       &diffopt);
-		} else {
-			diff_root_tree_oid(new_tree_oid, "", &diffopt);
-		}
-		diffcore_std(&diffopt);
-		diff_flush(&diffopt);
-
-		return;
-	}
-
-	difftype = ctx.qry.has_difftype ? ctx.qry.difftype : ctx.cfg.difftype;
-	use_ssdiff = difftype == DIFF_SSDIFF;
-
-	if (show_ctrls) {
-		cgit_print_layout_start();
-		cgit_print_diff_ctrls();
-	}
-
-	/*
-	 * Clicking on a link to a file in the diff stat should show a diff
-	 * of the file, showing the diff stat limited to a single file is
-	 * pretty useless.  All links from this point on will be to
-	 * individual files, so we simply reset the difftype in the query
-	 * here to avoid propagating DIFF_STATONLY to the individual files.
-	 */
-	if (difftype == DIFF_STATONLY)
-		ctx.qry.difftype = ctx.cfg.difftype;
-
-	cgit_print_diffstat(old_rev_oid, new_rev_oid, prefix);
-
-	if (difftype == DIFF_STATONLY)
-		return;
-
-	if (use_ssdiff) {
-		html("<table summary='ssdiff' class='ssdiff'>");
-	} else {
-		html("<table summary='diff' class='diff'>");
-		html("<tr><td>");
-	}
-	cgit_diff_tree(old_rev_oid, new_rev_oid, filepair_cb, prefix,
-		       ctx.qry.ignorews);
-	if (!use_ssdiff)
-		html("</td></tr>");
-	html("</table>");
-
-	if (show_ctrls)
-		cgit_print_layout_end();
 }

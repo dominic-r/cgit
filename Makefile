@@ -148,8 +148,9 @@ $(DOC_PDF): %.pdf : %.txt
 	a2x -f pdf cgitrc.5.txt
 
 clean: clean-doc
-	$(RM) cgit VERSION CGIT-CFLAGS *.o tags
-	$(RM) -r .deps
+	$(RM) cgit VERSION CGIT-CFLAGS tags
+	$(RM) src/core/*.o src/core/*.sp src/ui/*.o src/ui/*.sp
+	$(RM) -r src/core/.depend src/ui/.depend .deps
 
 cleanall: clean
 	$(MAKE) -C git clean
