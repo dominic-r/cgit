@@ -1363,4 +1363,6 @@ div#cgit .compare-form table { border: none; }
 div#cgit .compare-form td { padding: 0.2em 0.3em; border: none; }
 div#cgit .compare-form input[type='text'] { font-family: monospace; padding: 0.2em 0.4em; }
 div#cgit .compare-info { margin: 0.5em 0 1em 0; color: var(--text-secondary); }
+div#cgit .compare-stat.add { color: var(--success-color, #080); font-weight: bold; }
+div#cgit .compare-stat.del { color: var(--danger-color, #b00); font-weight: bold; }
 div#cgit .compare-commits { margin-bottom: 1em; }

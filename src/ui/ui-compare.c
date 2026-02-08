@@ -14,6 +14,33 @@
 #include "html.h"
 #include "strvec.h"
 
+static int cmp_files, cmp_adds, cmp_rems;
+static int cmp_lines_added, cmp_lines_removed;
+
+static void compare_count_lines(char *line, int len)
+{
+	if (line && len > 0) {
+		if (line[0] == '+')
+			cmp_lines_added++;
+		else if (line[0] == '-')
+			cmp_lines_removed++;
+	}
+}
+
+static void compare_inspect_filepair(struct diff_filepair *pair)
+{
+	int binary = 0;
+	unsigned long old_size = 0, new_size = 0;
+
+	cmp_files++;
+	cmp_lines_added = 0;
+	cmp_lines_removed = 0;
+	cgit_diff_files(&pair->one->oid, &pair->two->oid, &old_size, &new_size,
+			&binary, 0, ctx.qry.ignorews, compare_count_lines);
+	cmp_adds += cmp_lines_added;
+	cmp_rems += cmp_lines_removed;
+}
+
 static void print_branch_datalist(void)
 {
 	struct reflist list;
@@ -229,6 +256,11 @@ void cgit_print_compare(void)
 		return;
 	}
 
+	/* Compute diff stats */
+	cmp_files = cmp_adds = cmp_rems = 0;
+	cgit_diff_tree(&base_oid, &head_oid, compare_inspect_filepair,
+		       NULL, ctx.qry.ignorews);
+
 	/* Compare info header */
 	html("<div class='compare-info'>");
 	htmlf("Comparing ");
@@ -239,6 +271,10 @@ void cgit_print_compare(void)
 	html("<strong>");
 	html_txt(head_ref);
 	html("</strong>");
+	htmlf(" &mdash; ");
+	htmlf("<span class='compare-stat add'>+%d</span>", cmp_adds);
+	htmlf(" / ");
+	htmlf("<span class='compare-stat del'>-%d</span>", cmp_rems);
 	html("</div>");
 
 	/* Commit list */
