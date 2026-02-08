@@ -1,3 +1,9 @@
+/* Copyright (C) Dominic R and contributors (see AUTHORS)
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
 

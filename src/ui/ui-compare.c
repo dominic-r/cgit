@@ -1,5 +1,7 @@
 /* ui-compare.c: compare two refs (GitHub-style compare view)
  *
+ * Copyright (C) Dominic R and contributors (see AUTHORS)
+ *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
  */

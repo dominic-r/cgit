@@ -1,3 +1,9 @@
+/* Copyright (C) Dominic R and contributors (see AUTHORS)
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 #define USE_THE_REPOSITORY_VARIABLE
 
 #include "cgit.h"
@@ -212,7 +218,7 @@ void cgit_parse_args(int argc, const char **argv)
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "--version")) {
-			printf("CGit %s | https://git.zx2c4.com/cgit/\n\nCompiled in features:\n", cgit_version);
+			printf("CGit %s | https://github.com/dominic-r/cgit\n\nCompiled in features:\n", cgit_version);
 #ifdef NO_LUA
 			printf("[-] ");
 #else

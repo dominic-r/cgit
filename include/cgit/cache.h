@@ -1,3 +1,9 @@
+/* Copyright (C) Dominic R and contributors (see AUTHORS)
+ *
+ * Licensed under GNU General Public License v2
+ *   (see COPYING for full license text)
+ */
+
 /*
  * Since git has it's own cache.h which we include,
  * lets test on CGIT_CACHE_H to avoid confusion

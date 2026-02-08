@@ -1,5 +1,7 @@
 /* ui-search.c: file search and code search
  *
+ * Copyright (C) Dominic R and contributors (see AUTHORS)
+ *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
  */

@@ -1,6 +1,6 @@
 /* parsing.c: parsing of config files
  *
- * Copyright (C) 2006-2014 cgit Development Team <cgit@lists.zx2c4.com>
+ * Copyright (C) Dominic R and contributors (see AUTHORS)
  *
  * Licensed under GNU General Public License v2
  *   (see COPYING for full license text)
