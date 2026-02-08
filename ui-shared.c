@@ -818,6 +818,43 @@ static void print_rel_vcs_link(const char *url)
 	html(" Git repository'/>\n");
 }
 
+static void base64url_encode(const char *src, int len, struct strbuf *dst)
+{
+	static const char t[] =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	int i;
+
+	for (i = 0; i < len; i += 3) {
+		unsigned a = (unsigned char)src[i];
+		unsigned b = (i + 1 < len) ? (unsigned char)src[i + 1] : 0;
+		unsigned c = (i + 2 < len) ? (unsigned char)src[i + 2] : 0;
+		strbuf_addch(dst, t[a >> 2]);
+		strbuf_addch(dst, t[((a & 3) << 4) | (b >> 4)]);
+		if (i + 1 < len)
+			strbuf_addch(dst, t[((b & 0xf) << 2) | (c >> 6)]);
+		if (i + 2 < len)
+			strbuf_addch(dst, t[c & 0x3f]);
+	}
+}
+
+static const char *asset_cache_key(void)
+{
+	static struct strbuf key = STRBUF_INIT;
+
+	if (key.len)
+		return key.buf;
+
+	{
+		struct strbuf json = STRBUF_INIT;
+		strbuf_addf(&json,
+			    "{\"v\":\"%s\",\"d\":\"%s\",\"t\":\"%s\"}",
+			    cgit_version, __DATE__, __TIME__);
+		base64url_encode(json.buf, json.len, &key);
+		strbuf_release(&json);
+	}
+	return key.buf;
+}
+
 static int emit_css_link(struct string_list_item *s, void *arg)
 {
 	/* Do not emit anything if css= is specified. */
@@ -829,6 +866,7 @@ static int emit_css_link(struct string_list_item *s, void *arg)
 		html_attr(s->string);
 	else
 		html_attr((const char *)arg);
+	htmlf("?__cb=%s", asset_cache_key());
 	html("'/>\n");
 
 	return 0;
@@ -845,6 +883,7 @@ static int emit_js_link(struct string_list_item *s, void *arg)
 		html_attr(s->string);
 	else
 		html_attr((const char *)arg);
+	htmlf("?__cb=%s", asset_cache_key());
 	html("'></script>\n");
 
 	return 0;

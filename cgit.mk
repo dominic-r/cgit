@@ -106,6 +106,9 @@ $(CGIT_VERSION_OBJS): $(CGIT_PREFIX)VERSION
 $(CGIT_VERSION_OBJS): EXTRA_CPPFLAGS = \
 	-DCGIT_VERSION='"$(CGIT_VERSION)"'
 
+# ui-shared.c uses __DATE__/__TIME__ for asset cache busting, so always rebuild.
+$(CGIT_PREFIX)ui-shared.o: FORCE
+
 # Git handles dependencies using ":=" so dependencies in CGIT_OBJ are not
 # handled by that and we must handle them ourselves.
 cgit_dep_files := $(foreach f,$(CGIT_OBJS),$(dir $f).depend/$(notdir $f).d)
